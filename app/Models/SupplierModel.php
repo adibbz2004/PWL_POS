@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LevelModel extends Model
+class SupplierModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'm_level'; 
-    protected $primaryKey = 'level_id';
+    protected $table = 'm_supplier'; 
+    protected $primaryKey = 'supplier_id';
 
      /**
      * The attributes that are mass assignable.
@@ -18,5 +18,5 @@ class LevelModel extends Model
      * @var array
      */
 
-     protected $fillable = ['level_kode', 'level_nama']; 
+     protected $fillable = ['supplier_kode', 'supplier_nama']; 
 }
