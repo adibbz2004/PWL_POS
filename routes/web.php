@@ -1,46 +1,52 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\LevelController;
-use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\PenjualanController;
-use App\Http\Controllers\PenjualanDetailController;
-use App\Http\Controllers\StokController;
+use App\Http\Controllers\LevelController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WelcomeController;
+use App\Models\KategoriModel;
+use Illuminate\Support\Facades\Route;
 
-// Route halaman utama
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
 Route::get('/', [WelcomeController::class, 'index']);
 
-// Routes untuk user
 Route::group(['prefix' => 'user'], function () {
-    Route::get('/', [UserController::class, 'index']);
-    Route::post('/list', [UserController::class, 'list'])->name('user.list');
-    Route::get('/create', [UserController::class, 'create']);
-    Route::post('/', [UserController::class, 'store']);
-    Route::get('/{id}', [UserController::class, 'show']);
-    Route::get('/{id}/edit', [UserController::class, 'edit']);
-    Route::put('/{id}', [UserController::class, 'update']);
-    Route::delete('/{id}', [UserController::class, 'destroy']);
+    Route::get('/', [UserController::class, 'index']); // menampilkan halaman awal user
+    Route::post('/list', [UserController::class, 'list']);// menampilkan data user dalam bentuk json untuk datatable
+    Route::get('/create_ajax', [UserController::class, 'create_ajax']); // menampilkan halaman form tambah user
+    Route::post('/ajax', [UserController::class, 'store_ajax']); // menyimpan data user baru
+    Route::get('/{id}', [UserController::class, 'show']); // menampilkan detail user
+    Route::get('/{id}/edit', [UserController::class, 'edit']); // menampilkan halaman form edit user
+    Route::put('/{id}', [UserController::class, 'update']); // menyimpan perubahan data user
+    Route::delete('/{id}', [UserController::class, 'destroy']); // menghapus data user
 });
 
-// Routes untuk m_level
 Route::group(['prefix' => 'level'], function () {
-    Route::get('/', [LevelController::class, 'index']);
-    Route::post('/list', [LevelController::class, 'list'])->name('user.list');
-    Route::get('/create', [LevelController::class, 'create']);
-    Route::post('/', [LevelController::class, 'store']);
-    Route::get('/{id}', [LevelController::class, 'show']);
-    Route::get('/{id}/edit', [LevelController::class, 'edit']);
-    Route::put('/{id}', [LevelController::class, 'update']);
-    Route::delete('/{id}', [LevelController::class, 'destroy']);
+    Route::get('/', [LevelController::class, 'index']); // menampilkan halaman awal user
+    Route::post('/list', [LevelController::class, 'list']);// menampilkan data user dalam bentuk json untuk datatable
+    Route::get('/create', [LevelController::class, 'create']); // menampilkan halaman form tambah user
+    Route::post('/', [LevelController::class, 'store']); // menyimpan data user baru
+    Route::get('/{id}', [LevelController::class, 'show']); // menampilkan detail user
+    Route::get('/{id}/edit', [LevelController::class, 'edit']); // menampilkan halaman form edit user
+    Route::put('/{id}', [LevelController::class, 'update']); // menyimpan perubahan data user
+    Route::delete('/{id}', [LevelController::class, 'destroy']); // menghapus data user
 });
-// Routes untuk m_kategori
+
 Route::group(['prefix' => 'kategori'], function () {
     Route::get('/', [KategoriController::class, 'index']);
-    Route::post('/list', [KategoriController::class, 'list'])->name('kategori.list');
+    Route::post('/list', [KategoriController::class, 'list']);
     Route::get('/create', [KategoriController::class, 'create']);
     Route::post('/', [KategoriController::class, 'store']);
     Route::get('/{id}', [KategoriController::class, 'show']);
@@ -49,10 +55,9 @@ Route::group(['prefix' => 'kategori'], function () {
     Route::delete('/{id}', [KategoriController::class, 'destroy']);
 });
 
-// Routes untuk m_supplier
-Route::group(['prefix' => 'supplier'], function () {
+Route::prefix('supplier')->group(function () {
     Route::get('/', [SupplierController::class, 'index']);
-    Route::post('/list', [SupplierController::class, 'list'])->name('supplier.list');
+    Route::post('/list', [SupplierController::class, 'list']);
     Route::get('/create', [SupplierController::class, 'create']);
     Route::post('/', [SupplierController::class, 'store']);
     Route::get('/{id}', [SupplierController::class, 'show']);
@@ -61,10 +66,9 @@ Route::group(['prefix' => 'supplier'], function () {
     Route::delete('/{id}', [SupplierController::class, 'destroy']);
 });
 
-// Routes untuk m_barang
-Route::group(['prefix' => 'barang'], function () {
+Route::prefix('barang')->group(function () {
     Route::get('/', [BarangController::class, 'index']);
-    Route::post('/list', [BarangController::class, 'list'])->name('barang.list');
+    Route::post('/list', [BarangController::class, 'list']);
     Route::get('/create', [BarangController::class, 'create']);
     Route::post('/', [BarangController::class, 'store']);
     Route::get('/{id}', [BarangController::class, 'show']);
@@ -73,57 +77,14 @@ Route::group(['prefix' => 'barang'], function () {
     Route::delete('/{id}', [BarangController::class, 'destroy']);
 });
 
-Route::group(['prefix' => 'penjualan'], function () {
-    Route::get('/', [PenjualanController::class, 'index']);
-    Route::post('/list', [PenjualanController::class, 'list'])->name('user.list');
-    Route::get('/create', [PenjualanController::class, 'create']);
-    Route::post('/', [PenjualanController::class, 'store']);
-    Route::get('/{id}', [PenjualanController::class, 'show']);
-    Route::get('/{id}/edit', [PenjualanController::class, 'edit']);
-    Route::put('/{id}', [PenjualanController::class, 'update']);
-    Route::delete('/{id}', [PenjualanController::class, 'destroy']);
-});
+// use App\Http\Controllers\KategoriController;
+// use App\Http\Controllers\LevelController;
 
-Route::group(['prefix' => 'penjualan-detail'], function () {
-    Route::get('/', [PenjualanDetailController::class, 'index']);
-    Route::post('/list', [PenjualanDetailController::class, 'list'])->name('user.list');
-    Route::get('/create', [PenjualanDetailController::class, 'create']);
-    Route::post('/', [PenjualanDetailController::class, 'store']);
-    Route::get('/{id}', [PenjualanDetailController::class, 'show']);
-    Route::get('/{id}/edit', [PenjualanDetailController::class, 'edit']);
-    Route::put('/{id}', [PenjualanDetailController::class, 'update']);
-    Route::delete('/{id}', [PenjualanDetailController::class, 'destroy']);
-});
-
-Route::group(['prefix' => 'stok'], function () {
-    Route::get('/', [StokController::class, 'index']);
-    Route::post('/list', [StokController::class, 'list'])->name('user.list');
-    Route::get('/create', [StokController::class, 'create']);
-    Route::post('/', [StokController::class, 'store']);
-    Route::get('/{id}', [StokController::class, 'show']);
-    Route::get('/{id}/edit', [StokController::class, 'edit']);
-    Route::put('/{id}', [StokController::class, 'update']);
-    Route::delete('/{id}', [StokController::class, 'destroy']);
-});
-
-// Routes untuk API DataTables
-
-
-// Models dan Migrations
-// php artisan make:model Level -m
-// php artisan make:model Kategori -m
-// php artisan make:model Supplier -m
-// php artisan make:model Barang -m
-
-// Model Definitions
-// app/Models/Level.php
-// app/Models/Kategori.php
-// app/Models/Supplier.php
-// app/Models/Barang.php
-
-// Controller Definitions
-// app/Http/Controllers/UserController.php
-// app/Http/Controllers/LevelController.php
-// app/Http/Controllers/KategoriController.php
-// app/Http/Controllers/SupplierController.php
-// app/Http/Controllers/BarangController.php
+// Route::get('/level',[LevelController::class, 'index']);
+// Route::get('/kategori',[KategoriController::class, 'index']);
+// Route::get('/user',[UserController::class, 'index']);
+// Route::get('/user/tambah',[UserController::class, 'tambah']);
+// Route::post('/user/tambah_simpan',[UserController::class, 'tambah_simpan']);
+// Route::get('/user/ubah/{id}',[UserController::class, 'ubah']);
+// Route::put('/user/ubah_simpan/{id}',[UserController::class, 'ubah_simpan']);
+// Route::get('/user/hapus/{id}',[UserController::class, 'hapus']);
