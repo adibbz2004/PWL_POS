@@ -1,4 +1,5 @@
 @extends('layouts.template')
+
 @section('content')
 <div class="card card-outline card-primary">
     <div class="card-header">
@@ -16,9 +17,11 @@
             <form method="POST" action="{{ url('/kategori/'.$kategori->kategori_id) }}" class="form-horizontal">
                 @csrf
                 {!! method_field('PUT') !!} <!-- Tambahkan method PUT untuk proses edit -->
-                    
+                
+                </div>
+                
                 <div class="form-group row">
-                    <label class="col-1 control-label col-form-label">Kode Kategori</label>
+                    <label class="col-1 control-label col-form-label">kategori_kode</label>
                     <div class="col-11">
                         <input type="text" class="form-control" id="kategori_kode" name="kategori_kode"
                             value="{{ old('kategori_kode', $kategori->kategori_kode) }}" required>
@@ -26,9 +29,10 @@
                             <small class="form-text text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-                </div>   
+                </div>
+                
                 <div class="form-group row">
-                    <label class="col-1 control-label col-form-label">Nama Kategori</label>
+                    <label class="col-1 control-label col-form-label">kategori_nama</label>
                     <div class="col-11">
                         <input type="text" class="form-control" id="kategori_nama" name="kategori_nama" 
                             value="{{ old('kategori_nama', $kategori->kategori_nama) }}" required>
@@ -36,7 +40,9 @@
                             <small class="form-text text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-                </div>      
+                </div>
+                
+                
                 
                 <div class="form-group row">
                     <label class="col-1 control-label col-form-label"></label>
@@ -50,7 +56,9 @@
     </div>
 </div>
 @endsection
+
 @push('css')
 @endpush
+
 @push('js')
 @endpush

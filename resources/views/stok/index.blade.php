@@ -1,56 +1,121 @@
 @extends('layouts.template')
 
 @section('content')
-<div class="card card-outline card-primary">
-    <div class="card-header">
-        <h3 class="card-title">{{ $page->title }}</h3>
-        <div class="card-tools">
-            <a class="btn btn-sm btn-primary mt-1" href="{{ url('stok/create') }}">Tambah</a>
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Daftar Stok</h3>
+            <div class="card-tools">
+                <a class="btn btn-sm btn-primary mt-1" href="{{ url('stok/create') }}">Tambah</a>
+                <button onclick="modalAction('{{ url('stok/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
+                    Ajax</button>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group row">
+                        <label class="col-1 control-label col-form-label">Filter:</label>
+                        <div class="col-3">
+                            <select class="form-control" id="supplier_id" name="supplier_id">
+                                <option value="">- Semua Supplier -</option>
+                                @foreach ($supplier as $item)
+                                    <option value="{{ $item->supplier_id }}">{{ $item->supplier_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Filter berdasarkan supplier</small>
+                        </div>
+                        <div class="col-3">
+                            <select class="form-control" id="barang_id" name="barang_id">
+                                <option value="">- Semua Barang -</option>
+                                @foreach ($barang as $item)
+                                    <option value="{{ $item->barang_id }}">{{ $item->barang_nama }}</option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Filter berdasarkan barang</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_stok">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Supplier</th>
+                        <th>Barang</th>
+                        <th>Jumlah</th>
+                        <th>Tanggal</th>
+                        <th>Diinput Oleh</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
-    <div class="card-body">
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        <table class="table table-bordered table-striped table-hover table-sm" id="table_stok">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Barang</th>
-                    <th>User</th>
-                    <th>Tanggal</th>
-                    <th>Jumlah</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-</div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('js')
-<script>
-    $(document).ready(function () {
-        $('#table_stok').DataTable({
-            serverside: true,
-            ajax: {
-                url: "{{ url('stok/list') }}",
-                type: "POST",
-            },
-            columns: [
-                { data: 'DT_RowIndex', className: 'text-center', orderable: false, searchable: false },
-                { data: 'barang.barang_nama', orderable: true, searchable: true },
-                { data: 'user.nama', orderable: true, searchable: true },
-                { data: 'stok_tanggal', orderable: true, searchable: true },
-                { data: 'stok_jumlah', orderable: true, searchable: true },
-                { data: 'aksi', orderable: false, searchable: false },
-            ]
+    <script>
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        var dataStok;
+        $(document).ready(function() {
+            dataStok = $('#table_stok').DataTable({
+                serverSide: true,
+                ajax: {
+                    url: "{{ url('stok/list') }}",
+                    type: "POST",
+                    data: function(d) {
+                        d.supplier_id = $('#supplier_id').val();
+                        d.barang_id = $('#barang_id').val();
+                    }
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        className: 'text-center',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'supplier.supplier_nama',
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: 'barang.barang_nama',
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: 'stok_jumlah',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'stok_tanggal',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'user.nama',
+                        orderable: false
+                    },
+                    {
+                        data: 'aksi',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+
+            $('#supplier_id, #barang_id').on('change', function() {
+                dataStok.ajax.reload();
+            });
         });
-    });
-</script>
+    </script>
 @endpush

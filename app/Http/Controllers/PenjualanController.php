@@ -43,12 +43,20 @@ class PenjualanController extends Controller
             return $penjualan->user ? $penjualan->user->nama : '-';
         })
         ->addColumn('aksi', function ($penjualan) {
-            $btn = '<a href="' . url('/penjualan/' . $penjualan->penjualan_id) . '" class="btn btn-info btn-sm">Detail</a>';
-            $btn .= '<a href="' . url('/penjualan/' . $penjualan->penjualan_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a>';
-            $btn .= '<form class="d-inline-block" method="POST" action="' . url('/penjualan/' . $penjualan->penjualan_id) . '">' .
-                csrf_field() . method_field('DELETE') .
-                '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
-            return $btn;
+            // $btn = '<a href="' . url('/penjualan/' . $penjualan->penjualan_id) . '" class="btn btn-info btn-sm">Detail</a>';
+            // $btn .= '<a href="' . url('/penjualan/' . $penjualan->penjualan_id . '/edit') . '" class="btn btn-warning btn-sm">Edit</a>';
+            // $btn .= '<form class="d-inline-block" method="POST" action="' . url('/penjualan/' . $penjualan->penjualan_id) . '">' .
+            //     csrf_field() . method_field('DELETE') .
+            //     '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button></form>';
+            // return $btn;
+            $btn = '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id .
+            '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+        $btn .= '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id .
+            '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+        $btn .= '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id .
+            '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+        return $btn;
+            
         })
         ->rawColumns(['aksi'])
         ->make(true);

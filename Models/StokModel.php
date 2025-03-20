@@ -39,3 +39,4 @@ class StokModel extends Model
         return $this->belongsTo(SupplierModel::class, 'supplier_id', 'supplier_id');
     }
 }
+
