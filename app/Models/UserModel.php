@@ -33,5 +33,10 @@
      {
          return $this->level->level_kode === $role;
      }
+
+     public function getRole()
+     {
+         return $this->level->level_kode; // Pastikan mengembalikan STRING, bukan BOOLEAN
+     }
      
  }
