@@ -19,7 +19,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Data supplier</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Data Supplier</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                         aria-hidden="true">&times;</span></button>
             </div>
@@ -30,12 +30,16 @@
                         <td>{{ $supplier->supplier_id }}</td>
                     </tr>
                     <tr>
-                        <th>supplier_kode</th>
+                        <th>Kode Supplier</th>
                         <td>{{ $supplier->supplier_kode }}</td>
                     </tr>
                     <tr>
-                        <th>supplier_nama</th>
+                        <th>Nama Supplier</th>
                         <td>{{ $supplier->supplier_nama }}</td>
+                    </tr>
+                    <tr>
+                        <th>Alamat</th>
+                        <td>{{ $supplier->supplier_alamat }}</td>
                     </tr>
                 </table>
             </div>
