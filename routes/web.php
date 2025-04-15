@@ -1,22 +1,14 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BarangController;
-use App\Http\Controllers\TransaksiPenjualanController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\KategoriController;
-use App\Http\Controllers\LevelController;
-use App\Http\Controllers\PenjualanDetailController;
-use App\Http\Controllers\StokController;
-use App\Http\Controllers\SupplierController;
-
-use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
-use PharIo\Manifest\Author;
-
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\LevelController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\SupplierController;
 Route::pattern('id', '[0-9]+'); //jika ada parameter id, maka harus berupa angka
-
-
 // register
 Route::get('register', [AuthController::class, 'register'])->name('register');
 Route::post('register', [AuthController::class, 'postRegister']);
@@ -33,7 +25,7 @@ Route::middleware(['auth'])->group(function () { //artinya semua route di dalam 
     // Route Level
 
     // Artinya semua role di dalam group ini harus punya rle ADM (Administrator)
-    Route::middleware(['authorize:ADM,MNG'])->group(function () {
+    Route::middleware(['authorize:ADM'])->group(function () {
         Route::group(['prefix' => 'level'], function () {
             Route::get('/', [LevelController::class, 'index']); // menampilkan halaman awal Level
             Route::post('/list', [LevelController::class, 'list']); // menampilkan data Level dalam bentuk json untuk datatable
@@ -111,6 +103,8 @@ Route::middleware(['auth'])->group(function () { //artinya semua route di dalam 
             Route::get('/{id}/delete_ajax', [BarangController::class, 'confirm_ajax']); // untuk tampilan form confirm delete Barang ajax
             Route::delete('/{id}/delete_ajax', [BarangController::class, 'delete_ajax']); // menghapus data Barang ajax
             Route::delete('/{id}', [BarangController::class, 'destroy']); // menghapus data Barang
+            Route::get('/import', [BarangController::class, 'import']); // menampilkan halaman form import Barang
+            Route::post('/import_ajax', [BarangController::class, 'import_ajax']); // menyimpan data Barang dari file import
         });
     });
 
@@ -133,35 +127,4 @@ Route::middleware(['auth'])->group(function () { //artinya semua route di dalam 
             Route::delete('/{id}', [SupplierController::class, 'destroy']); // menghapus data Supplier
         });
     });
-
-    Route::middleware(['authorize:ADM,MNG,STF'])->group(function () {
-        Route::group(['prefix' => 'stok'], function () {
-            Route::get('/', [StokController::class, 'index']); // menampilkan halaman awal TransaksiPenjualan
-            Route::post('/list', [StokController::class, 'list']); // menampilkan data TransaksiPenjualan dalam bentuk json untuk datatable
-            Route::get('/create', [StokController::class, 'create']); // menampilkan halaman form tambah TransaksiPenjualan
-            Route::post('/', [StokController::class, 'store']); // menyimpan data TransaksiPenjualan baru
-            Route::get('/create_ajax', [StokController::class, 'create_ajax']); // menampilkan halaman form tambah TransaksiPenjualan ajax
-            Route::post('/ajax', [StokController::class, 'store_ajax']); // menyimpan data TransaksiPenjualan baru ajax
-            Route::get('/{id}', [StokController::class, 'show']); // menampilkan detail TransaksiPenjualan
-            Route::get('/{id}/show_ajax', [StokController::class, 'show_ajax']); // menampilkan detail TransaksiPenjualan ajax
-            Route::get('/{id}/edit', [StokController::class, 'edit']); // menampilkan halaman form edit TransaksiPenjualan
-            Route::put('/{id}', [StokController::class, 'update']); // menyimpan perubahan data TransaksiPenjualan
-            Route::get('/{id}/edit_ajax', [StokController::class, 'edit_ajax']); // menampilkan halaman form edit TransaksiPenjualan ajax
-            Route::put('/{id}/update_ajax', [StokController::class, 'update_ajax']); // menyimpan perubahan data TransaksiPenjualan ajax
-            Route::get('/{id}/delete_ajax', [StokController::class, 'confirm_ajax']); // untuk tampilan form confirm delete TransaksiPenjualan ajax
-            Route::delete('/{id}/delete_ajax', [StokController::class, 'delete_ajax']); // menghapus data TransaksiPenjualan ajax
-            Route::delete('/{id}', [StokController::class, 'destroy']); // menghapus data TransaksiPenjualan
-        });
-    });
-   
 });
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
