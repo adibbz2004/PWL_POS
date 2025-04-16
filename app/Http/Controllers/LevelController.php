@@ -8,20 +8,14 @@ use App\Models\LevelModel;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LevelController extends Controller
 {
     public function index()
     {
     
-        //DB::insert('insert into m_level (level_kode, level_nama, created_at) values (?, ?, ?)', ['CUS', 'Pelanggan', now()]);
-        //return 'Insert data baru ditambahkan';
-
-        //$row = DB::update('update m_level set level_nama = ? where level_kode = ?', ['Customer', 'CUS']);
-        //return 'Update data berhasil.Jumlah data yang diupdate: ' . $row. ' baris'; ;
-
-        //$row = DB::delete('delete from m_level where level_kode = ?', ['CUS']);
-        //return 'Delete data berhasil. Jumlah data yang dihapus: '. $row.' baris';
+      
 
         $breadcrumb = (object) [
             'title' => 'Daftar Level',
@@ -405,5 +399,23 @@ class LevelController extends Controller
 
         $writer->save('php://output'); //simpan file ke output
         exit; //keluar dari scriptA
+    }
+
+    public function export_pdf(){
+        $level = LevelModel::select(
+            'level_kode',
+            'level_nama',
+        )
+        ->orderBy('level_id')
+        ->orderBy('level_kode')
+        ->get();
+
+        // use Barryvdh\DomPDF\Facade\Pdf;
+        $pdf = PDF::loadView('level.export_pdf', ['level' => $level]);
+        $pdf->setPaper('A4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render(); // render pdf
+
+        return $pdf->stream('Data Level '.date('Y-m-d H-i-s').'.pdf');
     }
 }    

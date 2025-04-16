@@ -7,24 +7,14 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 // use Illuminate\Support\Facades\Hash;
 
 class KategoriController extends Controller
 {
     public function index()
     {
-        /*$data = [
-            'kategori_kode' => 'SNK',
-            'kategori_nama' => 'Snack/Makanan Ringan',
-            'created_at' => now()
-        ];*/
-        //DB::table('m_kategori')->insert($data);
-        //return 'Insert data baru berhasil';
-
-        //$row = DB::table('m_kategori')->where('kategori_kode', 'SNK') -> delete();
-        //return 'Delete data berhasil. Jumlah data yang dihapus: '. $row. ' baris';
-
-        // Menampilkan halaman awal kategori
+       
         $breadcrumb = (object) [
             'title' => 'Daftar Kategori',
             'list' => ['Home', 'Kategori']
@@ -398,5 +388,23 @@ class KategoriController extends Controller
 
         $writer->save('php://output'); //simpan file ke output
         exit; //keluar dari scriptA
+    }
+
+    public function export_pdf(){
+        $kategori = KategoriModel::select(
+            'kategori_kode',
+            'kategori_nama'
+        )
+        ->orderBy('kategori_id')
+        ->orderBy('kategori_kode')
+        ->get();
+
+        // use Barryvdh\DomPDF\Facade\Pdf;
+        $pdf = PDF::loadView('kategori.export_pdf', ['kategori' => $kategori]);
+        $pdf->setPaper('A4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render(); // render pdf
+
+        return $pdf->stream('Data Kategori Barang '.date('Y-m-d H-i-s').'.pdf');
     }
 }
