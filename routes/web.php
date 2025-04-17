@@ -8,6 +8,7 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
 
 Route::pattern('id', '[0-9]+'); //jika ada parameter id, maka harus berupa angka
@@ -20,11 +21,21 @@ Route::post('login', [AuthController::class, 'postlogin']);
 //logout
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
+
+
 Route::middleware(['auth'])->group(function () { //artinya semua route di dalam goup ini harus login dulu
     // masukkan semua route yang perlu autentikasi di sini
 
     Route::get('/', [WelcomeController::class, 'index']);
     // Route Level
+
+    Route::middleware(['authorize:ADM,MNG,STF,KSR,SPV'])->group(function () {
+        Route::middleware(['authorize:ADM,MNG,STF,KSR,SPV'])->group(function () {
+            Route::get('/profile', [ProfileController::class, 'profil'])->name('profil');  
+            Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+            Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+        });        
+    });
 
     // Artinya semua role di dalam group ini harus punya rle ADM (Administrator)
     Route::middleware(['authorize:ADM'])->group(function () {
