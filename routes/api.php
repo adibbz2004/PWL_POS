@@ -22,6 +22,7 @@ Route::post('/register', App\Http\Controllers\Api\RegisterController::class )->n
 Route::post('/login', App\Http\Controllers\Api\LoginController::class )->name('login');
 Route::post('/logout', App\Http\Controllers\Api\LogoutController::class )->name('logout');
 
+//level
 use App\Http\Controllers\Api\LevelController;
  
  Route::get('levels', [LevelController::class, 'index']);
@@ -30,3 +31,42 @@ use App\Http\Controllers\Api\LevelController;
  Route::put('levels/{level}', [LevelController::class, 'update']);
  Route::delete('levels/{level}', [LevelController::class, 'destroy']);
  
+
+ //user
+ use App\Http\Controllers\Api\UserController;
+ 
+ Route::get('users', [UserController::class, 'index']);
+ Route::post('users', [UserController::class, 'store']);
+ Route::get('users/{user}', [UserController::class, 'show']);
+ Route::put('users/{user}', [UserController::class, 'update']);
+ Route::delete('users/{user}', [UserController::class, 'destroy']);
+ 
+ 
+ //katgeori
+ use App\Http\Controllers\Api\KategoriController;
+ 
+ Route::get('kategori', [KategoriController::class, 'index']);
+ Route::post('kategori', [KategoriController::class, 'store']);
+ Route::get('kategori/{kategori}', [KategoriController::class, 'show']);
+ Route::put('kategori/{kategori}', [KategoriController::class, 'update']);
+ Route::delete('kategori/{kategori}', [KategoriController::class, 'destroy']);
+ 
+ 
+ //barang
+ use App\Http\Controllers\Api\BarangController;
+ 
+ Route::get('barang', [BarangController::class, 'index']);
+ Route::post('barang', [BarangController::class, 'store']);
+ Route::get('barang/{barang}', [BarangController::class, 'show']);
+ Route::put('barang/{barang}', [BarangController::class, 'update']);
+ Route::delete('barang/{barang}', [BarangController::class, 'destroy']);
+ 
+ 
+ //supplier
+ use App\Http\Controllers\Api\SupplierController;
+ 
+ Route::get('supplier', [SupplierController::class, 'index']);
+ Route::post('supplier', [SupplierController::class, 'store']);
+ Route::get('supplier/{supplier}', [SupplierController::class, 'show']);
+ Route::put('supplier/{supplier}', [SupplierController::class, 'update']);
+ Route::delete('supplier/{supplier}', [SupplierController::class, 'destroy']);
