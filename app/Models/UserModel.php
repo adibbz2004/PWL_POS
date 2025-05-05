@@ -34,6 +34,13 @@ class UserModel extends Authenticatable implements JWTSubject
 
     protected $casts = ['password' => 'hashed']; // casting password agar otomatis di hash
 
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn($image) => url('/storage/posts/' . $image),
+        );
+    }
+
     /**
      * Relasi ke tabel level
      */
@@ -65,10 +72,5 @@ class UserModel extends Authenticatable implements JWTSubject
         return $this->level->level_kode;
     }
 
-    protected function image(): Attribute
-    {
-        return Attribute::make(
-            get: fn($image) => url('/storage/posts/' . $image),
-        );
-    }
+   
 }

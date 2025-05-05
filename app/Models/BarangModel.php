@@ -23,11 +23,18 @@ class BarangModel extends Model
         'barang_nama',
         'harga_beli',
         'harga_jual',
-        'IMAGE',
+        'image',
         // Tidak perlu tambahkan 'barang_stok' di sini karena bukan kolom database
     ];
 
     public $timestamps = false;
+
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn($image) => url('/storage/posts/' . $image),
+        );
+    }
 
     public function kategori()
     {
@@ -39,11 +46,6 @@ class BarangModel extends Model
         return StokModel::where('barang_id', $this->barang_id)->sum('stok_jumlah');
     }
 
-    protected function image(): Attribute
-    {
-        return Attribute::make(
-            get: fn($image) => url('/storage/posts/' . $image),
-        );
-    }
+  
    
 }

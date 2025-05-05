@@ -22,6 +22,7 @@ class RegisterController extends Controller
         }
 
         $image = $request->file('image');
+        
         $user = UserModel::create([
             'username' => $request->username,
             'password' => bcrypt($request->password),

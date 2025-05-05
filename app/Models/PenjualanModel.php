@@ -16,7 +16,15 @@ class PenjualanModel extends Model
     protected $table = 't_penjualan';
     protected $primaryKey = 'penjualan_id';
 
-    protected $fillable = ['penjualan_id', 'user_id', 'barang_id', 'pembeli', 'penjualan_kode', 'penjualan_tanggal', 'created_at', 'updated_at', 'image'];
+    protected $fillable = ['penjualan_id', 'user_id', 'barang_id', 'pembeli', 
+    'penjualan_kode', 'penjualan_tanggal', 'created_at', 'updated_at', 'image'];
+
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn($image) => url('/storage/posts/' . $image),
+        );
+    }
 
     public function user(): BelongsTo
     {
@@ -28,10 +36,5 @@ class PenjualanModel extends Model
         return $this->hasMany(PenjualanDetailModel::class, 'penjualan_id', 'penjualan_id');
     }
 
-    protected function image(): Attribute
-    {
-        return Attribute::make(
-            get: fn($image) => url('/storage/posts/' . $image),
-        );
-    }
+   
 }
