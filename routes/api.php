@@ -73,3 +73,9 @@ use App\Http\Controllers\Api\LevelController;
  Route::get('supplier/{supplier}', [SupplierController::class, 'show']);
  Route::put('supplier/{supplier}', [SupplierController::class, 'update']);
  Route::delete('supplier/{supplier}', [SupplierController::class, 'destroy']);
+
+ //penjualan
+ use App\Http\Controllers\Api\PenjualanController;
+ 
+ Route::post('/penjualan', [PenjualanController::class, 'store']);
+ Route::get('/penjualan/{penjualan}', [PenjualanController::class, 'show']);
