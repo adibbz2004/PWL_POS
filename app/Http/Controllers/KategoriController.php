@@ -174,6 +174,12 @@ class KategoriController extends Controller
         return view('kategori.create_ajax', ['kategori' => $kategori]);
     }
 
+    public function show_ajax(string $id){
+        $kategori = KategoriModel::find($id);
+
+        return view('kategori.show_ajax', ['kategori' => $kategori]);
+    }
+
     public function store_ajax(Request $request)
     {
         //cek apakah ada request berupa ajax

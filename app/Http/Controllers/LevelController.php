@@ -169,6 +169,13 @@ class LevelController extends Controller
             return redirect('/level')->with('error', 'Data level gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini');
         }
     }
+
+    public function show_ajax(string $id)
+    {
+        $level = LevelModel::find($id);
+        return view('level.show_ajax', ['level' => $level]);
+    }
+    
     public function create_ajax()
     {
         $level = LevelModel::select('level_id', 'level_nama')->get();

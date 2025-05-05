@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PenjualanDetailModel extends Model
 {
     use HasFactory;
 
-    protected $table = 't_penjualan_detail'; // Nama tabel di database
-    protected $primaryKey = 'detail_id'; // Primary key tabel
+    protected $table = 't_penjualan_detail';
+    protected $primaryKey = 'detail_id';
 
     protected $fillable = [
         'penjualan_id',
@@ -19,13 +20,12 @@ class PenjualanDetailModel extends Model
         'harga'
     ];
 
-    public function penjualan()
-    {
+    
+    public function penjualan(): BelongsTo {
         return $this->belongsTo(PenjualanModel::class, 'penjualan_id', 'penjualan_id');
     }
 
-    public function barang()
-    {
+    public function barang(): BelongsTo {
         return $this->belongsTo(BarangModel::class, 'barang_id', 'barang_id');
     }
 }

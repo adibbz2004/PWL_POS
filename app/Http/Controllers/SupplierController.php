@@ -172,6 +172,13 @@ class SupplierController extends Controller
         }
     }
 
+    public function show_ajax(string $id)
+    {
+        $supplier = SupplierModel::find($id);
+
+        return view('supplier.show_ajax', ['supplier' => $supplier]);
+    }
+
     public function create_ajax()
     {
         $supplier = SupplierModel::select('supplier_id', 'supplier_nama', 'supplier_alamat')->get();

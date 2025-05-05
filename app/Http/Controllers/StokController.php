@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\StokModel;
-use App\Models\BarangModel;
 use App\Models\UserModel;
-use App\Models\SupplierModel;
+use App\Models\BarangModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Models\SupplierModel;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class StokController extends Controller
 {
@@ -26,14 +30,14 @@ class StokController extends Controller
         $activeMenu = 'stok';
 
         $barang = BarangModel::all();
-        $users = UserModel::all();
+        $user = UserModel::all();
         $supplier = SupplierModel::all();
 
         return view('stok.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
             'barang' => $barang,
-            'users' => $users,
+            'user' => $user,
             'supplier' => $supplier,
             'activeMenu' => $activeMenu
         ]);
@@ -77,7 +81,7 @@ class StokController extends Controller
         ];
 
         $barang = BarangModel::all();
-        $users = UserModel::all();
+        $user = UserModel::all();
         $supplier = SupplierModel::all();
         $activeMenu = 'stok';
 
@@ -85,7 +89,7 @@ class StokController extends Controller
             'breadcrumb' => $breadcrumb,
             'page' => $page,
             'barang' => $barang,
-            'users' => $users,
+            'user' => $user,
             'supplier' => $supplier,
             'activeMenu' => $activeMenu
         ]);
@@ -137,7 +141,7 @@ class StokController extends Controller
     {
         $stok = StokModel::find($id);
         $barang = BarangModel::all();
-        $users = UserModel::all();
+        $user = UserModel::all();
         $supplier = SupplierModel::all();
 
         if (!$stok) {
@@ -160,7 +164,7 @@ class StokController extends Controller
             'page' => $page,
             'stok' => $stok,
             'barang' => $barang,
-            'users' => $users,
+            'user' => $user,
             'supplier' => $supplier,
             'activeMenu' => $activeMenu
         ]);
@@ -214,7 +218,7 @@ class StokController extends Controller
         $barang = BarangModel::select('barang_id', 'barang_nama')->get();
         $supplier = SupplierModel::select('supplier_id', 'supplier_nama')->get();
         $user = UserModel::select('user_id', 'username')->get();
-        
+
         return view('stok.create_ajax', compact('barang', 'supplier', 'user'));
     }
 
@@ -225,12 +229,12 @@ class StokController extends Controller
                 'supplier_id' => 'required|integer',
                 'barang_id'   => 'required|integer',
                 'user_id'     => 'required|integer',
-                'stok_tanggal'=> 'required|date',
+                'stok_tanggal' => 'required|date',
                 'stok_jumlah' => 'required|integer|min:1'
             ];
 
             $validator = Validator::make($request->all(), $rules);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -263,12 +267,12 @@ class StokController extends Controller
                 'supplier_id' => 'required|integer',
                 'barang_id'   => 'required|integer',
                 'user_id'     => 'required|integer',
-                'stok_tanggal'=> 'required|date',
+                'stok_tanggal' => 'required|date',
                 'stok_jumlah' => 'required|integer|min:1'
             ];
-            
+
             $validator = Validator::make($request->all(), $rules);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -322,5 +326,166 @@ class StokController extends Controller
         }
     }
 
-   
+    public function import()
+    {
+        return view('stok.import');
+    }
+
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+
+            $rules = [
+                // Validasi file harus xlsx dan maksimal 1MB
+                'file_stok' => ['required', 'mimes:xlsx', 'max:1024']
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'   => false,
+                    'message'  => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            // Ambil file dari request
+            $file = $request->file('file_stok');
+
+            // Membaca file Excel
+            $reader = IOFactory::createReader('Xlsx');
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Ubah isi sheet ke dalam array
+            $data = $sheet->toArray(null, false, true, true);
+            $insert = [];
+
+            // Proses data, baris pertama dianggap header
+            if (count($data) > 1) {
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) {
+                        $insert[] = [
+                            'supplier_id' => $value['A'],
+                            'barang_id'   => $value['B'],
+                            'user_id'     => $value['C'],
+                            'stok_tanggal' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value['D']),
+                            'stok_jumlah' => $value['E'],
+                            'created_at'  => now(),
+                            'updated_at'  => now(),
+                        ];
+                    }
+                }
+
+                if (count($insert) > 0) {
+                    DB::table('t_stok')->insert($insert);
+                }
+
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Data stok berhasil diimport'
+                ]);
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Tidak ada data yang diimport'
+                ]);
+            }
+        }
+
+        return redirect('/');
+    }
+
+
+    public function export_excel()
+    {
+        //Ambil value stok yang akan diexport
+        $stok = StokModel::select(
+            'barang_id',
+            'user_id',
+            'supplier_id',
+            'stok_tanggal',
+            'stok_jumlah'
+        )
+            ->orderBy('stok_id')
+            ->with(['barang', 'user', 'supplier'])
+            ->get();
+    
+        //load library excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet(); //ambil sheet aktif
+    
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Nama Barang');
+        $sheet->setCellValue('C1', 'Nama User');
+        $sheet->setCellValue('D1', 'Nama Supplier');
+        $sheet->setCellValue('E1', 'Tanggal Masuk');
+        $sheet->setCellValue('F1', 'Jumlah Stok');
+    
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true); // Set header bold
+    
+        $no = 1; //Nomor value dimulai dari 1
+        $baris = 2; //Baris value dimulai dari 2
+        foreach ($stok as $key => $value) {
+            $sheet->setCellValue('A' . $baris, $no);
+            $sheet->setCellValue('B' . $baris, $value->barang->barang_nama);
+            $sheet->setCellValue('C' . $baris, $value->user->nama);
+            
+            // Cek jika supplier null, tampilkan 'Terjual'
+            $supplierName = $value->supplier_id ? $value->supplier->supplier_nama : 'Terjual';
+            $sheet->setCellValue('D' . $baris, $supplierName);
+            
+            $sheet->setCellValue('E' . $baris, $value->stok_tanggal);
+            $sheet->setCellValue('F' . $baris, $value->stok_jumlah);
+            $no++;
+            $baris++;
+        }
+    
+        foreach (range('A', 'F') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true); //set auto size untuk kolom
+        }
+    
+        $sheet->setTitle('Data Stock Barang'); //set judul sheet
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx'); //set writer
+        $filename = 'Data_Stock_Barang_' . date('Y-m-d_H-i-s') . '.xlsx'; //set nama file
+    
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=1');
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Cache-Control: cache, must-revalidate');
+        header('Pragma: public');
+    
+        $writer->save('php://output'); //simpan file ke output
+        exit; //keluar dari script
+    }
+
+    
+
+    public function export_pdf()
+    {
+        $stok = StokModel::select(
+            'barang_id',
+            'user_id',
+            'supplier_id',
+            'stok_tanggal',
+            'stok_jumlah'
+        )
+            ->orderBy('barang_id')
+            ->orderBy('stok_tanggal')
+            ->with(['barang', 'user', 'supplier'])
+            ->get();
+
+        // use Barryvdh\DomPDF\Facade\Pdf;
+        $pdf = PDF::loadView('stok.export_pdf', ['stok' => $stok]);
+        $pdf->setPaper('A4', 'portrait'); // set ukuran kertas dan orientasi
+        $pdf->setOption("isRemoteEnabled", true); // set true jika ada gambar dari url
+        $pdf->render(); // render pdf
+
+        return $pdf->stream('Data Stock Barang ' . date('Y-m-d H-i-s') . '.pdf');
+    }
 }

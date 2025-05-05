@@ -34,89 +34,98 @@
         </div>
     </div>
 
-    <div class="col-md-8">
-        <div class="card card-primary">
-            <div class="card-header">
-                <h3 class="card-title">Informasi Profil</h3>
-            </div>
-            
-            <div class="card-body">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <i class="icon fas fa-check"></i> {{ session('success') }}
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <i class="icon fas fa-ban"></i> {{ session('error') }}
-                    </div>
-                @endif
+    <!-- resources/views/profile/index.blade.php -->
+<!-- ... bagian sebelumnya tetap sama ... -->
 
-                <form action="{{ route('profile.update') }}" method="POST">
-                    @csrf
-                    @method('PUT')
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Username</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" value="{{ $user->username }}" readonly>
-                        </div>
-                    </div>
+<div class="col-md-8">
+    <div class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Informasi Profil</h3>
+        </div>
+        
+        <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <i class="icon fas fa-check"></i> {{ session('success') }}
+                </div>
+            @endif
+            @if($errors->any())
+                <div class="alert alert-danger alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <i class="icon fas fa-ban"></i> 
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Nama Lengkap</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" 
-                                   value="{{ old('nama', $user->nama) }}">
-                            @error('nama')
+            <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Username</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="{{ $user->username }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Nama Lengkap</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" 
+                               value="{{ old('nama', $user->nama) }}">
+                        @error('nama')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Password Baru</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="password" name="password" 
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Kosongkan jika tidak ingin mengubah">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary toggle-password" type="button">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            @error('password')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
+                        <small class="text-muted">Minimal 8 karakter, mengandung huruf besar, kecil, angka, dan simbol</small>
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Password Baru</label>
-                        <div class="col-sm-9">
-                            <div class="input-group">
-                                <input type="password" name="password" 
-                                       class="form-control @error('password') is-invalid @enderror"
-                                       placeholder="Kosongkan jika tidak ingin mengubah">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary toggle-password" type="button">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
-                                @error('password')
-                                    <span class="invalid-feedback">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <small class="text-muted">Minimal 8 karakter</small>
-                        </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Konfirmasi Password</label>
+                    <div class="col-sm-9">
+                        <input type="password" name="password_confirmation" 
+                               class="form-control @error('password_confirmation') is-invalid @enderror" 
+                               placeholder="Konfirmasi password baru">
                     </div>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label">Konfirmasi Password</label>
-                        <div class="col-sm-9">
-                            <input type="password" name="password_confirmation" 
-                                   class="form-control" 
-                                   placeholder="Konfirmasi password baru">
-                        </div>
+                <div class="form-group row mt-4">
+                    <div class="col-sm-9 offset-sm-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                        </button>
                     </div>
-
-                    <div class="form-group row mt-4">
-                        <div class="col-sm-9 offset-sm-3">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save mr-2"></i>Simpan Perubahan
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<!-- ... bagian setelahnya tetap sama ... -->
 
 <div id="myModal" class="modal fade animate shake" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="75%"></div>
 
