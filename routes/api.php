@@ -22,6 +22,9 @@ Route::post('/register', App\Http\Controllers\Api\RegisterController::class )->n
 Route::post('/login', App\Http\Controllers\Api\LoginController::class )->name('login');
 Route::post('/logout', App\Http\Controllers\Api\LogoutController::class )->name('logout');
 
+Route::post('/register1', App\Http\Controllers\Api\RegisterController::class )->name('register1');
+
+
 //level
 use App\Http\Controllers\Api\LevelController;
  
